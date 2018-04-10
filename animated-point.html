@@ -1,0 +1,95 @@
+<!-- How to make an animated point!
+
+** Set up the web map **
+1. Create an HTML document with references to Mapbox GL JS in the <head> tags.
+2. Create a map div container between your <body> tags. This will hold your map on the page.
+3. Paste your access token (Found by going through Studio > Account > Access Token).
+4. Between <script> tags, declare a map variable.
+5. In your map variable, you can set the container, style, center and zoom.
+
+** Calculate the coordinates **
+1. Declare the radius.
+2. Write a function that calculates the coordinates the point will transverse.
+
+** Write animation path **
+1. On the map, load a source and layer
+2. The source will be function that calculated the coordinates.
+3. Add the point as a circle layer.
+4. Create a function that will animate the line by getting the animation timestamp 
+5. Start the animation marker.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Animate a point</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+
+    /* Enter your public key (Studio > Account > Keys) to display your maps created in Studio. */
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWFkaXpoZW4iLCJhIjoiY2lzbTViZ2ozMDAyejJ5bzFxaXB0MXN2eCJ9.YVS0Rlj7IjNHireL_ysr6w';
+    
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v9',
+        center: [-120.804178, 36.552672],
+        zoom: 2
+    });
+
+    var radius = 20;
+
+    function pointOnCircle(angle) {
+        return {
+            "type": "Point",
+            "coordinates": [
+                /* Math. */
+                Math.cos(angle) * radius,
+                Math.sin(angle) * radius
+            ]
+        };
+    }
+
+    map.on('load', function () {
+        /* Add a source and layer displaying a point which will be animated in a circle. */
+        map.addSource('point', {
+            "type": "geojson",
+            "data": pointOnCircle(0) /* The center of the circle. */
+        });
+
+        map.addLayer({
+            "id": "point",
+            "source": "point",
+            "type": "circle",
+            "paint": {
+                "circle-radius": 5,
+                "circle-color": "#007cbf"
+            }
+        });
+
+        function animateMarker(timestamp) {
+            /* Update the data to a new position based on the animation timestamp. The divisor in the expression `timestamp / 1000` controls the animation speed. */
+            map.getSource('point').setData(pointOnCircle(timestamp / 1000));
+
+            /* Request the next frame of the animation. */
+            requestAnimationFrame(animateMarker);
+        }
+
+        /* Start the animation! */
+        animateMarker(0);
+    });
+</script>
+
+</body>
+</html>

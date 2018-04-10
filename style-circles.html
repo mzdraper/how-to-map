@@ -1,0 +1,79 @@
+<!-- How to make an animated point!
+
+** Set up the web map **
+1. Create an HTML document with references to Mapbox GL JS in the <head> tags.
+2. Create a map div container between your <body> tags. This will hold your map on the page.
+3. Paste your access token (Found by going through Studio > Account > Access Token).
+4. Between <script> tags, declare a map variable.
+5. In your map variable, you can set the container, style, center and zoom.
+
+** Add the data as a layer **
+1. Add the layer as a JSON.
+2. Gather the data from the source URL.
+3. Align the data columns with colors.
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Style circles with a data-driven property</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+
+    /* Enter your public key (Studio > Account > Keys) to display your maps created in Studio. */
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWFkaXpoZW4iLCJhIjoiY2lzbTViZ2ozMDAyejJ5bzFxaXB0MXN2eCJ9.YVS0Rlj7IjNHireL_ysr6w';
+    
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v9',
+        zoom: 12,
+        center: [-122.447303, 37.753574]
+    });
+
+    map.on('load', function () {
+
+        map.addLayer({
+            'id': 'population',
+            'type': 'circle',
+            'source': {
+                type: 'vector',
+                url: 'mapbox://examples.8fgz4egr' /* Link you data here. */
+            },
+            'source-layer': 'sf2010',
+            'paint': {
+                /* Circle size changes with zoom level from 12 to 22 */
+                'circle-radius': {
+                    'base': 1.75,
+                    'stops': [[12, 2], [22, 180]]
+                },
+                /* Color circles by ethnicity, using a match expression */
+                // https://www.mapbox.com/mapbox-gl-js/style-spec/#expressions-match
+                'circle-color': [
+                    'match',
+                    ['get', 'ethnicity'],
+                    'White', '#fbb03b',
+                    'Black', '#223b53',
+                    'Hispanic', '#e55e5e',
+                    'Asian', '#3bb2d0',
+                    /* "other" */ '#ccc'
+                ]
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

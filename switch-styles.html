@@ -1,0 +1,93 @@
+<!-- How to change map styles!
+
+** Set up the web map **
+1. Create an HTML document with references to Mapbox GL JS in the <head> tags.
+2. Create a map div container between your <body> tags. This will hold your map on the page.
+3. Paste your access token (Found by going through Studio > Account > Access Token).
+4. Between <script> tags, declare a map variable.
+5. In your map variable, you can set the container, style, center and zoom.
+
+** Add buttons **
+1. Add style to your button's menu.
+2. Add the buttons using radio (a circular button where one can be clicked at a time).
+
+** Add button functionality **
+1. Add ways to access the radio buttons input.
+2. Create a loop to go through the inputs until it switches to the correct layer.
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Change a map's style</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<!-- Styling for the menu panel to change between layers. -->
+<style>
+    #menu {
+        position: absolute;
+        background: #fff;
+        padding: 10px;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+</style>
+
+<div id='map'></div>
+
+<!-- Available buttons to switch between styles. To add your own styles, examine the URL and add the specific path of each style per button. -->
+<div id='menu'>
+    <input id='basic' type='radio' name='rtoggle' value='basic' checked='checked'>
+    <label for='basic'>basic</label>
+    <input id='streets' type='radio' name='rtoggle' value='streets'>
+    <label for='streets'>streets</label>
+    <input id='bright' type='radio' name='rtoggle' value='bright'>
+    <label for='bright'>bright</label>
+    <input id='light' type='radio' name='rtoggle' value='light'>
+    <label for='light'>light</label>
+    <input id='dark' type='radio' name='rtoggle' value='dark'>
+    <label for='dark'>dark</label>
+    <input id='satellite' type='radio' name='rtoggle' value='satellite'>
+    <label for='satellite'>satellite</label>
+</div>
+
+<script>
+    /* Enter your public key (Studio > Account > Keys) to display your maps created in Studio. */
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWFkaXpoZW4iLCJhIjoiY2lzbTViZ2ozMDAyejJ5bzFxaXB0MXN2eCJ9.YVS0Rlj7IjNHireL_ysr6w';
+
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/basic-v9', /* Style URL */
+        zoom: 13,
+        center: [4.899, 52.372]
+    });
+
+    /* layerList refers to <div id='menu'> */
+    var layerList = document.getElementById('menu');
+    /* inputs refers to <input id='[STYLE]'> */
+    var inputs = layerList.getElementsByTagName('input');
+
+    /* To switch between layers, this function finds the layer.target.id and changes the style URL to change the map style. */
+    function switchLayer(layer) {
+        var layerId = layer.target.id; /* This specifically gathers the input. */
+        map.setStyle('mapbox://styles/mapbox/' + layerId + '-v9'); /* This changes the style. */
+    }
+
+    /* For every time i < inputs.length, add one to i and complete the inside of the {}. */
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].onclick = switchLayer; /* Switches the layer equivalent to the value of i. */
+    }
+</script>
+
+</body>
+</html>

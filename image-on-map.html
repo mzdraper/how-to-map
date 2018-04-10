@@ -1,0 +1,78 @@
+<!-- How to put an image on a map!
+
+** Set up your map **
+1. Create an HTML document with references to Mapbox GL JS in the <head> tags.
+2. Create a map div container between your <body> tags. This will hold your map on the page.
+3. Paste your access token (Found by going through Studio > Account > Access Token).
+4. Between <script> tags, declare a map variable.
+5. In your map variable, you can set the container, style, center and zoom.
+
+** Add an image **
+1. Load the image via an accepted link.
+2. Add the image to the style to be used in icon-image, background-pattern, fill-pattern and line-pattern.
+3. Adds a layer to the map style.
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Add an icon to the map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+mapboxgl.accessToken = 
+    /* Enter your public key (Studio > Account > Keys) to display your maps created in Studio. */
+    'pk.eyJ1IjoibWFkaXpoZW4iLCJhIjoiY2lzbTViZ2ozMDAyejJ5bzFxaXB0MXN2eCJ9.YVS0Rlj7IjNHireL_ysr6w';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9'
+});
+
+map.on('load', function() {
+    /* The URL of the image file. Image file must be in png, webp, or jpg format. */
+    map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/500px-International_Pok%C3%A9mon_logo.svg.png', function(error, image) {
+        if (error) throw error;
+        map.addImage('pokemon', image);
+
+        /* Layers are JSON objects that define what data to draw, the order to draw it in, and how to style the data type when drawing it. It lists all the properties of the style layer. */
+        map.addLayer({
+            "id": "points",
+            "type": "symbol",
+            "source": {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [{
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [0, 0] /* This can change the position of where the image will be on the map. The coordinates go [longitude, latitude]. */
+                        }
+                    }]
+                }
+            },
+            "layout": {
+                "icon-image": "pokemon",
+                "icon-size": 0.25
+            }
+        });
+    });
+});
+
+</script>
+
+</body>
+</html>

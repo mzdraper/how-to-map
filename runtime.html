@@ -1,0 +1,91 @@
+<!-- How to make an icon appear on runtime!
+
+** Set up your web map **
+1. Create an HTML document with references to Mapbox GL JS in the <head> tags.
+2. Create a map div container between your <body> tags. This will hold your map on the page.
+3. Paste your access token (Found by going through Studio > Account > Access Token).
+4. Between <script> tags, declare a map variable.
+5. In your map variable, you can set the container, style, center and zoom.
+
+** Generating the image on runtime **
+1. Create a for-loop that runs through the pixel colors, incremented by one.
+2. Add the layer to the map.
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Add a generated icon to the map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+
+/* Enter your public key (Studio > Account > Keys) to display your maps created in Studio. */
+mapboxgl.accessToken = 'pk.eyJ1IjoibWFkaXpoZW4iLCJhIjoiY2lzbTViZ2ozMDAyejJ5bzFxaXB0MXN2eCJ9.YVS0Rlj7IjNHireL_ysr6w';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9'
+});
+
+/* .on adds a listener to a specified event type */
+map.on('load', function () {
+
+    var width = 64; // The image will be 64 pixels square
+    var bytesPerPixel = 4; // Each pixel is represented by 4 bytes: red, green, blue, and alpha.
+    var data = new Uint8Array(width * width * bytesPerPixel);
+
+    /* This is a for loop. x = 0; For every time x < width, add one to x and complete what is inside the {}. Repeat this for the next for loop, but using variable y. The value of offset is calculated with new values for x and y with each loop iteration. Lines 51 through 54 is placing each pixel with its correct coloring. */
+    for (var x = 0; x < width; x++) {
+        for (var y = 0; y < width; y++) {
+            var offset = (y * width + x) * bytesPerPixel;
+            data[offset + 0] = y / width * 255; // red
+            data[offset + 1] = x / width * 255; // green
+            data[offset + 2] = 128;             // blue
+            data[offset + 3] = 255;             // alpha
+        }
+    }
+
+    /* Adds an image to the map with id='gradient' and fixed dimensions. */
+    /* This image can be used in icon-image, background-pattern, fill-pattern, and line-pattern. */
+    map.addImage('gradient', {width: width, height: width, data: data});
+
+    /* Add the image to the map as a layer. This format is a GeoJSON. */
+    map.addLayer({
+        "id": "points",
+        "type": "symbol",
+        "source": {
+            "type": "geojson",
+            "data": {
+                "type": "FeatureCollection",
+                "features": [{
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-122.262380,37.876761] /* This can change the position of where the image will be on the map. The coordinates go [longitude, latitude]. */
+                    }
+                }]
+            }
+        },
+        "layout": {
+            "icon-image": "gradient" /* This is the same string id in addImage. */
+        }
+    });
+});
+
+</script>
+
+</body>
+</html>

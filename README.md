@@ -1,0 +1,3 @@
+# how-to-map
+
+I'm going through [Mapbox's examples](https://www.mapbox.com/mapbox-gl-js/example/simple-map/) to  simplify them for people more unfamiliar with code. There's a breakdown at the top about what to do and comments throughout the code to guide you through it. I'm going through these pretty thoroughly to familiarise myself with the code and documentation. There's a lot of examples and tutorials to go through, but if you have any requests, let me know!
